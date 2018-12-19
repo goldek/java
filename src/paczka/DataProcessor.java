@@ -16,6 +16,7 @@ public class DataProcessor {
         csvFileReader = fileReader;
         fillDataArray();
         prepareHeaders();
+        removeHeadersFromData();
     }
 
 
@@ -25,7 +26,7 @@ public class DataProcessor {
         filterHeaders();
         filterDataForTable();
         removeHeadersFromData();
-        
+
     }
 
     // Fills dataArray array
@@ -44,7 +45,8 @@ public class DataProcessor {
 
     protected String[] filterFileLines(String[] fileLines){
         List<String> filteredFileLines = new ArrayList<String>();
-        for (int i=0; i<fileLines.length;i++){
+        filteredFileLines.add(fileLines[0]);
+        for (int i=1; i<fileLines.length;i++){
             if(fileLines[i].contains("bizhub")){
                 filteredFileLines.add(fileLines[i]);
             }
