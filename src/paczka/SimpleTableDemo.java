@@ -17,10 +17,8 @@ public class SimpleTableDemo extends JPanel {
 
     public SimpleTableDemo(String[] columnNames, String[][] data) {
         super(new GridLayout(1, 0));
-        System.out.println("Data "+data.length);
-        System.out.println("columNames "+columnNames.length);
         final JTable table = new JTable(data, columnNames);
-        table.setPreferredScrollableViewportSize(new Dimension(1000, 120));
+        table.setPreferredScrollableViewportSize(new Dimension(7000, 700));
         table.setFillsViewportHeight(true);
 
         if (DEBUG) {

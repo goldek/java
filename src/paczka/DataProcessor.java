@@ -17,6 +17,8 @@ public class DataProcessor {
         fillDataArray();
         prepareHeaders();
         removeHeadersFromData();
+        sortArrayByColumn(getDataArray(),8);
+
     }
 
 
@@ -32,12 +34,18 @@ public class DataProcessor {
     // Fills dataArray array
     protected void fillDataArray() {
         String[] fileLines = filterFileLines(csvFileReader.getFileLines());
-        System.out.println(fileLines.length);
-        String[][] data = new String[fileLines.length][8];
+        int columns = fileLines[0].split(",").length+1;
+//        System.out.println(fileLines.length);
+        String[][] data = new String[fileLines.length][columns];
+
         for (int i = 0; i < fileLines.length; i++) {
+            System.out.println(fileLines[i]);
             String[] temp = fileLines[i].split(",");
-            for (int j = 0; j < data[i].length; j++) {
-                data[i][j] = temp[j];
+            data[i][0] = Integer.toString(i);
+            System.out.println("Data "+data[i][0]);
+            for (int j = 1; j < data[i].length; j++) {
+                data[i][j] = temp[j-1].replaceAll("\"","");
+                System.out.println("Data od "+i+" "+j +" "+data[i][j]);
             }
         }
         setDataArray(data);
@@ -46,8 +54,9 @@ public class DataProcessor {
     protected String[] filterFileLines(String[] fileLines){
         List<String> filteredFileLines = new ArrayList<String>();
         filteredFileLines.add(fileLines[0]);
+
         for (int i=1; i<fileLines.length;i++){
-            if(fileLines[i].contains("bizhub")){
+            if((fileLines[i].contains("bizhub"))&&(fileLines[i].contains("Imaging Unit"))){
                 filteredFileLines.add(fileLines[i]);
             }
         }
@@ -55,8 +64,10 @@ public class DataProcessor {
     }
     protected void prepareHeaders(){
         String[] headers = new String[dataArray[0].length];
-        for (int i=0; i<dataArray[0].length; i++){
+        headers[0] = "Nr";
+        for (int i=1; i<dataArray[0].length; i++){
             headers[i] = dataArray[0][i];
+            System.out.println(dataArray[0][i] +" , "+ headers.length+ "    header "+i+": "+headers[i]);
         }
         setHeaders(headers);
     }
@@ -71,25 +82,25 @@ public class DataProcessor {
         setDataArray(temp);
     }
 
+
     // Get filtered lines from file based on filter
-    protected void sortArrayByColumn(String[][] array, int column) {
+    private void sortArrayByColumn(String[][] array, int column) {
         Arrays.sort(array, new Comparator<String[]>() {
-                    @Override
+
+            @Override
                     public int compare(String[] first, String[] second) {
                         // compare the first element
-                        if (first[column] == second[column]) {
-                            return 0;
+                        int result = 0;
+                        if (Integer.parseInt(first[column].replace("%","")) == Integer.parseInt(second[column].replace("%",""))) {
+                            result = 0;
                         }
-                        if (first[column] == null) {
-                            return -1;
+                        if ((first[column] == null)||(Integer.parseInt(first[column].replace("%",""))<Integer.parseInt(second[column].replace("%","")))) {
+                            result = -1;
                         }
-                        if (second[column] == null) {
-                            return 1;
+                        if ((second[column] == null)||(Integer.parseInt(first[column].replace("%",""))>Integer.parseInt(second[column].replace("%","")))) {
+                            result = 1;
                         }
-                        int comparedTo = first[column].compareTo(second[column]);
-
-                        if (comparedTo == 0) return first[1].compareTo(second[1]);
-                        else return comparedTo;
+                      return result;
                     }
 
                 }
